@@ -200,20 +200,28 @@ public class ResultHandler implements Runnable {
         if (GameBuffer.getInstance().isMyTurn()) {
             RollDiceDialog.getDialog(mainFrame, resultObject.getInt(Protocol.Roll.toString()) + resultObject.getInt(Protocol.NextDiceNum.toString())).setVisible(true);
         }
-        if (resultObject.getInt(Protocol.NextDiceNum.toString()) == 0) {
-            SwingUtilities.invokeLater(() -> {
-                pieceMoveForward(Protocol.Roll);
-                gridEffect(resultObject.getInt(Protocol.Effect.toString()));
-            });
-        } else {
-            SwingUtilities.invokeLater(() -> pieceMoveForward(Protocol.Roll));
-            SelectRouteDialog.getDialog(mainFrame).setVisible(true);
+        try {
+            if (resultObject.getInt(Protocol.NextDiceNum.toString()) == 0) {
+                SwingUtilities.invokeAndWait(() -> {
+                    pieceMoveForward(Protocol.Roll);
+                    gridEffect(resultObject.getInt(Protocol.Effect.toString()));
+                });
+            } else {
+                SwingUtilities.invokeAndWait(() -> pieceMoveForward(Protocol.Roll));
+                SelectRouteDialog.getDialog(mainFrame).setVisible(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void selectRoute() {
-        if (resultObject.getInt(Protocol.NextDiceNum.toString()) == 0) {
-            SwingUtilities.invokeLater(() -> pieceMoveForward(Protocol.Roll));
+        try {
+            if (resultObject.getInt(Protocol.NextDiceNum.toString()) == 0) {
+                SwingUtilities.invokeAndWait(() -> pieceMoveForward(Protocol.Roll));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -221,7 +229,11 @@ public class ResultHandler implements Runnable {
         EndGameDialog.getDialog(mainFrame, resultObject.getString(Protocol.Username.toString()));
         GameBuffer.getInstance().clearInGameData();
         WebSocketClient.getInstance().switchToClientServer();
-        SwingUtilities.invokeLater(() -> mainFrame.changePanel(mainFrame.getMatchingPanel()));
+        try {
+            SwingUtilities.invokeAndWait(() -> mainFrame.changePanel(mainFrame.getMatchingPanel()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
