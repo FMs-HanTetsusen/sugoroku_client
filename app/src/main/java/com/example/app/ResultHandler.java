@@ -102,11 +102,15 @@ public class ResultHandler implements Runnable {
     }
 
     private void receiveChat() {
-        SwingUtilities.invokeLater(() -> {
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            LocalDateTime now = LocalDateTime.now();
-            mainFrame.getLobbyPanel().getChatArea().append("・" + resultObject.getString(Protocol.Username.toString()) + " - " + dateTimeFormatter.format(now) + "\n　" + resultObject.getString(Protocol.Message.toString()) + '\n');
-        });
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                mainFrame.getLobbyPanel().getChatArea().append("・" + resultObject.getString(Protocol.Username.toString()) + " - " + dateTimeFormatter.format(now) + "\n　" + resultObject.getString(Protocol.Message.toString()) + '\n');
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setGamePlayers() { //required by joinGame()
@@ -119,12 +123,16 @@ public class ResultHandler implements Runnable {
 
     private void joinGame() {
         if (resultObject.getBoolean(Protocol.Status.toString())) {
-            SwingUtilities.invokeLater(() -> {
-                mainFrame.setGamePanel();
-                mainFrame.changePanel(mainFrame.getGamePanel());
-                setGamePlayers();
-                mainFrame.getGamePanel().startPlayerTurn();
-            });
+            try {
+                SwingUtilities.invokeAndWait(() -> {
+                    mainFrame.setGamePanel();
+                    mainFrame.changePanel(mainFrame.getGamePanel());
+                    setGamePlayers();
+                    mainFrame.getGamePanel().startPlayerTurn();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -240,7 +248,7 @@ public class ResultHandler implements Runnable {
                         default -> System.err.println("ERROR: illegal protocol detected.");
                     }
                 } else {
-                    TimeUnit.MICROSECONDS.sleep(100); //result読み取り処理が追いつかない場合、このタイムアウトを延長
+                    TimeUnit.MILLISECONDS.sleep(100); //result読み取り処理が追いつかない場合、このタイムアウトを延長
                 }
             } catch (Exception e) {
                 e.printStackTrace();
