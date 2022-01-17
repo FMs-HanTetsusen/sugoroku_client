@@ -21,7 +21,7 @@ public class WebSocketClient {
     }
 
     public void switchToAppServer() {
-        String appServerEndpoint = "ws://localhost:8080/app/example"; //必要に応じてエンドポイントを調整
+        String appServerEndpoint = "ws://localhost:8081/app/app"; //必要に応じてエンドポイントを調整
         currentManager = new WebSocketManager(appServerEndpoint);
         currentManager.connect();
     }

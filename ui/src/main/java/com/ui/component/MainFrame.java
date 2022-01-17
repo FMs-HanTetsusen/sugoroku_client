@@ -30,12 +30,12 @@ public class MainFrame extends JFrame {
         }
         contentPane = getContentPane();
 
-//        setTopPanel();
-//        contentPane.add(topPanel);
+        setTopPanel();
+        contentPane.add(topPanel);
 //        setMatchingPanel();
 //        contentPane.add(matchingPanel);
-        setGamePanel();
-        contentPane.add(gamePanel);
+//        setGamePanel();
+//        contentPane.add(gamePanel);
         pack();
         setVisible(true);
     }
