@@ -60,7 +60,7 @@ public class MatchingPanel extends JPanel {
         }
         textArea.setEditable(false);
         textArea.setLineWrap(true);
-        textArea.setFont(FontScheme.MATCHING_LABEL.getFont());
+        textArea.setFont(FontScheme.MATCHING_RULE.getFont());
         textArea.setBackground(ColorScheme.LIGHT_GOLD.getColor());
         scrollPane.setPreferredSize(new Dimension(400, 600));
         scrollPane.setBorder(new LineBorder(Color.BLACK, 1, false));

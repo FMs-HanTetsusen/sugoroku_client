@@ -145,26 +145,26 @@ public class ResultHandler implements Runnable {
 
     private void pieceMoveForward(Protocol protocol) { //required by rollDice(), selectRoute() and girdEffect(int type)
         if (protocol == Protocol.Roll || protocol == Protocol.Value) {
-            ActionListener moveForwardAction = new ActionListener() {
-                int i = 0;
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (i < resultObject.getInt(protocol.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString())) {
-                        mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
-                        i++;
-                    }
-                }
-            };
-            Timer timer = new Timer(500, moveForwardAction);
-            timer.start();
-//            for (int i = 0; i < resultObject.getInt(protocol.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString()); i++) {
-//                try {
-//                    mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
-//                    TimeUnit.MILLISECONDS.sleep(500); //piece movement animation, repaints every 0.5 second
-//                } catch (Exception e) {
-//                    e.printStackTrace();
+//            ActionListener moveForwardAction = new ActionListener() {
+//                int i = 0;
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//                    if (i < resultObject.getInt(protocol.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString())) {
+//                        mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
+//                        i++;
+//                    }
 //                }
-//            }
+//            };
+//            Timer timer = new Timer(500, moveForwardAction);
+//            timer.start();
+            for (int i = 0; i < resultObject.getInt(protocol.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString()); i++) {
+                try {
+                    mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
+                    TimeUnit.MILLISECONDS.sleep(500); //piece movement animation, repaints every 0.5 second
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         } else {
             System.err.println("ERROR: unsupported protocol for pieceMoveForward() in ResultHandler.java");
         }
@@ -200,13 +200,39 @@ public class ResultHandler implements Runnable {
     private void gridEffect(int type) {
         switch (type) {
             case 0 -> {}
-            case 1 -> getItem();
-            case 2 -> pieceMoveForward(Protocol.Value);
-            case 3 -> pieceMoveBackward();
+            case 1 -> {
+                if (GameBuffer.getInstance().isMyTurn()) {
+                    getItem();
+                    GridEffectDialog.getDialog(mainFrame, type, 0).setVisible(true);
+                }
+            }
+            case 2 -> {
+                if (GameBuffer.getInstance().isMyTurn()) {
+                    GridEffectDialog.getDialog(mainFrame, type, resultObject.getInt(Protocol.Value.toString())).setVisible(true);
+                }
+                pieceMoveForward(Protocol.Value);
+            }
+            case 3 -> {
+                if (GameBuffer.getInstance().isMyTurn()) {
+                    GridEffectDialog.getDialog(mainFrame, type, resultObject.getInt(Protocol.Value.toString())).setVisible(true);
+                }
+                pieceMoveBackward();
+            }
 //            case 4 -> {}
-            case 5 -> allGetItem();
-            case 6 -> allLoseItem();
-            case 7 -> pieceBackToStart();
+            case 5 -> {
+                allGetItem();
+                GridEffectDialog.getDialog(mainFrame, type, 0).setVisible(true);
+            }
+            case 6 -> {
+                allLoseItem();
+                GridEffectDialog.getDialog(mainFrame, type, 0).setVisible(true);
+            }
+            case 7 -> {
+                if (GameBuffer.getInstance().isMyTurn()) {
+                    GridEffectDialog.getDialog(mainFrame, type, resultObject.getInt(Protocol.Value.toString())).setVisible(true);
+                }
+                pieceBackToStart();
+            }
             default -> System.err.println("ERROR: unsupported grid effect type for gridEffect() in ResultHandler.java");
         }
     }
@@ -240,6 +266,7 @@ public class ResultHandler implements Runnable {
                         mainFrame.getGamePanel().getGameMap().setKeepDirection(GameBuffer.getInstance().getCurrentIndex());
                     }
                     pieceMoveForward(Protocol.Roll);
+                    gridEffect(resultObject.getInt(Protocol.Effect.toString()));
                 });
             }
         } catch (Exception e) {
@@ -248,7 +275,7 @@ public class ResultHandler implements Runnable {
     }
 
     private void endGame() {
-        EndGameDialog.getDialog(mainFrame, resultObject.getString(Protocol.Username.toString()));
+        EndGameDialog.getDialog(mainFrame, resultObject.getString(Protocol.Username.toString())).setVisible(true);
         GameBuffer.getInstance().clearInGameData();
         WebSocketClient.getInstance().switchToClientServer();
         try {
