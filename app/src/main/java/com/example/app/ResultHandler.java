@@ -14,8 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
@@ -143,41 +141,24 @@ public class ResultHandler implements Runnable {
         mainFrame.getGamePanel().startPlayerTurn();
     }
 
-    private void pieceMoveForward(Protocol protocol) { //required by rollDice(), selectRoute() and girdEffect(int type)
-        if (protocol == Protocol.Roll || protocol == Protocol.Value) {
-//            ActionListener moveForwardAction = new ActionListener() {
-//                int i = 0;
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    if (i < resultObject.getInt(protocol.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString())) {
-//                        mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
-//                        i++;
-//                    }
-//                }
-//            };
-//            Timer timer = new Timer(500, moveForwardAction);
-//            timer.start();
-            for (int i = 0; i < resultObject.getInt(protocol.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString()); i++) {
-                try {
-                    mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
-                    TimeUnit.MILLISECONDS.sleep(500); //piece movement animation, repaints every 0.5 second
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            System.err.println("ERROR: unsupported protocol for pieceMoveForward() in ResultHandler.java");
+    private void pieceMoveForward() { //required by rollDice(), selectRoute() and girdEffect(int type)
+        try {
+            mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
+            TimeUnit.MILLISECONDS.sleep(500); //piece movement animation, repaints every 0.5 second
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private void pieceMoveBackward() { //required by girdEffect(int type)
+    private void pieceJumpForward() {
         for (int i = 0; i < resultObject.getInt(Protocol.Value.toString()); i++) {
-            try {
-                mainFrame.getGamePanel().getGameMap().moveBackward(GameBuffer.getInstance().getCurrentIndex());
-                TimeUnit.MILLISECONDS.sleep(500); //piece movement animation, repaints every 0.5 second
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mainFrame.getGamePanel().getGameMap().moveForward(GameBuffer.getInstance().getCurrentIndex());
+        }
+    }
+
+    private void pieceJumpBackward() { //required by girdEffect(int type)
+        for (int i = 0; i < resultObject.getInt(Protocol.Value.toString()); i++) {
+            mainFrame.getGamePanel().getGameMap().moveBackward(GameBuffer.getInstance().getCurrentIndex());
         }
     }
 
@@ -210,13 +191,13 @@ public class ResultHandler implements Runnable {
                 if (GameBuffer.getInstance().isMyTurn()) {
                     GridEffectDialog.getDialog(mainFrame, type, resultObject.getInt(Protocol.Value.toString())).setVisible(true);
                 }
-                pieceMoveForward(Protocol.Value);
+                pieceJumpForward();
             }
             case 3 -> {
                 if (GameBuffer.getInstance().isMyTurn()) {
                     GridEffectDialog.getDialog(mainFrame, type, resultObject.getInt(Protocol.Value.toString())).setVisible(true);
                 }
-                pieceMoveBackward();
+                pieceJumpBackward();
             }
 //            case 4 -> {}
             case 5 -> {
@@ -242,16 +223,13 @@ public class ResultHandler implements Runnable {
             RollDiceDialog.getDialog(mainFrame, resultObject.getInt(Protocol.Roll.toString())).setVisible(true);
         }
         try {
+            for (int i = 0; i < resultObject.getInt(Protocol.Roll.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString()); i++) {
+                SwingUtilities.invokeAndWait(this::pieceMoveForward);
+            }
             if (resultObject.getInt(Protocol.NextDiceNum.toString()) == 0) {
-                SwingUtilities.invokeAndWait(() -> {
-                    pieceMoveForward(Protocol.Roll);
-                    gridEffect(resultObject.getInt(Protocol.Effect.toString()));
-                });
-            } else {
-                SwingUtilities.invokeAndWait(() -> pieceMoveForward(Protocol.Roll));
-                if (GameBuffer.getInstance().isMyTurn()) {
-                    SelectRouteDialog.getDialog(mainFrame).setVisible(true);
-                }
+                SwingUtilities.invokeAndWait(() -> gridEffect(resultObject.getInt(Protocol.Effect.toString())));
+            } else if (GameBuffer.getInstance().isMyTurn()) {
+                SelectRouteDialog.getDialog(mainFrame).setVisible(true);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,13 +239,13 @@ public class ResultHandler implements Runnable {
     private void selectRoute() {
         try {
             if (resultObject.getInt(Protocol.NextDiceNum.toString()) == 0) {
-                SwingUtilities.invokeAndWait(() -> {
-                    if (resultObject.getInt(Protocol.Route.toString()) == 0) {
-                        mainFrame.getGamePanel().getGameMap().setKeepDirection(GameBuffer.getInstance().getCurrentIndex());
-                    }
-                    pieceMoveForward(Protocol.Roll);
-                    gridEffect(resultObject.getInt(Protocol.Effect.toString()));
-                });
+                if (resultObject.getInt(Protocol.Route.toString()) == 0) {
+                    mainFrame.getGamePanel().getGameMap().setKeepDirection(GameBuffer.getInstance().getCurrentIndex());
+                }
+                for (int i = 0; i < resultObject.getInt(Protocol.Roll.toString()) - resultObject.getInt(Protocol.NextDiceNum.toString()); i++) {
+                    SwingUtilities.invokeAndWait(this::pieceMoveForward);
+                }
+                SwingUtilities.invokeAndWait(() -> gridEffect(resultObject.getInt(Protocol.Effect.toString())));
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -80,8 +80,15 @@ public class GamePanelMap extends JPanel {
     public void moveBackward(int i) {
         switch (pieces[i].X) {
             case 4, 10 -> moveUp(i);
-            case 6, 12 -> moveDown(i);
-            case 7 -> moveLeft(i);
+            case 5, 7 -> moveLeft(i);
+            case 6 -> {
+                if (pieces[i].Y == 11) {
+                    moveLeft(i);
+                } else {
+                    moveDown(i);
+                }
+            }
+            case 12 -> moveDown(i);
         }
         repaint();
     }
