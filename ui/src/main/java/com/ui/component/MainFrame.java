@@ -15,11 +15,13 @@ public class MainFrame extends JFrame {
     TopPanel topPanel;
     MatchingPanel matchingPanel;
     LobbyPanel lobbyPanel;
+    GamePanel gamePanel;
     Container contentPane;
 
     MainFrame(String title) {
         super(title);
-        setMinimumSize(new Dimension(1280, 960)); //画面の最小サイズを制限、画面内のコンポーネントが崩れた場合ここを拡大
+        setResizable(false);
+        setMinimumSize(new Dimension(1440, 1024)); //画面の最小サイズを制限、画面内のコンポーネントが崩れた場合ここを拡大
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         try {
             setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("icon.png"))).getImage());
@@ -28,10 +30,12 @@ public class MainFrame extends JFrame {
         }
         contentPane = getContentPane();
 
-//        setTopPanel();
-//        contentPane.add(topPanel);
-        setMatchingPanel();
-        contentPane.add(matchingPanel);
+        setTopPanel();
+        contentPane.add(topPanel);
+//        setMatchingPanel();
+//        contentPane.add(matchingPanel);
+//        setGamePanel();
+//        contentPane.add(gamePanel);
         pack();
         setVisible(true);
     }
@@ -52,7 +56,7 @@ public class MainFrame extends JFrame {
         return matchingPanel;
     }
 
-    public void setLobbyPanel(String lobbyType, String lobbyID) {
+    public void setLobbyPanel(UIKeyword lobbyType, String lobbyID) {
         lobbyPanel = new LobbyPanel(this, lobbyType, lobbyID);
     }
 
@@ -60,8 +64,12 @@ public class MainFrame extends JFrame {
         return lobbyPanel;
     }
 
+    public void setGamePanel() {
+        gamePanel = new GamePanel(this);
+    }
+
     public GamePanel getGamePanel() {
-        return null; //TODO: ゲームパネルクラス完成後は要修正
+        return gamePanel;
     }
 
     public void changePanel(JPanel nextPanel) {

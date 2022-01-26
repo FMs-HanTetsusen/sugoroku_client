@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 
 public class App {
-    private static final String appTitle = "Sugoroku";
+    private static final String appTitle = "すごろくゲーム";
 
     public static void main(String[] args) {
         System.setProperty("awt.useSystemAAFontSettings", "on");
@@ -24,7 +24,7 @@ public class App {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Nimbus look and feel not found, using default look and feel instead.");
+            System.out.println("INFO: Nimbus look and feel not found, using default look and feel instead.");
         }
 
         MainFrame mainFrame = MainFrame.getMainFrame(appTitle);

@@ -14,9 +14,10 @@ public class RequestPrivateMatchDialog extends AppDialog {
     MatchingPanel parentPanel;
     JTextField privateMatchIDField;
 
-    RequestPrivateMatchDialog(MainFrame mainFrame, MatchingPanel matchingPanel, String label) {
+    RequestPrivateMatchDialog(MainFrame mainFrame, MatchingPanel matchingPanel) {
         super(mainFrame);
-        dialogMessage.setText(label);
+        setTitle("ID入力");
+        dialogMessage.setText("<html>プライベートロビーIDを入力ください<br>（4桁半角英数字）</html>");
         parentFrame = mainFrame;
         parentPanel = matchingPanel;
 
@@ -38,7 +39,11 @@ public class RequestPrivateMatchDialog extends AppDialog {
             }
         });
         positiveButton.setEnabled(false); //確認ボタンの初期化（無効）
-        positiveButton.addActionListener(actionEvent -> parentPanel.requestPrivateMatch(privateMatchIDField.getText()));
+        positiveButton.addActionListener(e -> parentPanel.requestPrivateMatch(privateMatchIDField.getText()));
         contentPane.add(privateMatchIDField, LayoutScheme.DIALOG_TEXTFIELD.getLayout());
+    }
+
+    public static JDialog getDialog(MainFrame mainFrame, MatchingPanel matchingPanel) {
+        return new RequestPrivateMatchDialog(mainFrame, matchingPanel);
     }
 }

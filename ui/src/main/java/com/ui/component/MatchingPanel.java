@@ -3,6 +3,7 @@ package com.ui.component;
 import com.data.Protocol;
 import com.data.Request;
 import com.data.buffer.RequestBuffer;
+import com.ui.component.dialog.RequestPrivateMatchDialog;
 import com.ui.scheme.*;
 import org.json.JSONObject;
 
@@ -39,12 +40,12 @@ public class MatchingPanel extends JPanel {
         parentFrame = mainFrame;
         textArea = new JTextArea();
         scrollPane = new JScrollPane(textArea);
-        randomMatchButton = FactoryConstructor.getFactory(UIKeyword.Button).getButton(UIKeyword.MatchingPanel, "ランダムマッチ");
-        privateMatchButton = FactoryConstructor.getFactory(UIKeyword.Button).getButton(UIKeyword.MatchingPanel, "プライベートマッチ");
-        checkRecordButton = FactoryConstructor.getFactory(UIKeyword.Button).getButton(UIKeyword.MatchingPanel, "対戦成績確認");
-        randomMatchLabel = FactoryConstructor.getFactory(UIKeyword.Label).getLabel(UIKeyword.MatchingPanel, "※世界中のプレイヤーと対戦しよう");
-        privateMatchLabel = FactoryConstructor.getFactory(UIKeyword.Label).getLabel(UIKeyword.MatchingPanel, "※友だちとプライベートで対戦しよう");
-        checkRecordLabel = FactoryConstructor.getFactory(UIKeyword.Label).getLabel(UIKeyword.MatchingPanel, "※自分の対戦成績を確認しよう");
+        randomMatchButton = FactoryConstructor.getFactory(UIKeyword.Button).getButton(UIKeyword.MatchingPanelButton, "ランダムマッチ");
+        privateMatchButton = FactoryConstructor.getFactory(UIKeyword.Button).getButton(UIKeyword.MatchingPanelButton, "プライベートマッチ");
+        checkRecordButton = FactoryConstructor.getFactory(UIKeyword.Button).getButton(UIKeyword.MatchingPanelButton, "対戦成績確認");
+        randomMatchLabel = FactoryConstructor.getFactory(UIKeyword.Label).getLabel(UIKeyword.MatchingPanelLabel, "※世界中のプレイヤーと対戦しよう");
+        privateMatchLabel = FactoryConstructor.getFactory(UIKeyword.Label).getLabel(UIKeyword.MatchingPanelLabel, "※友だちとプライベートで対戦しよう");
+        checkRecordLabel = FactoryConstructor.getFactory(UIKeyword.Label).getLabel(UIKeyword.MatchingPanelLabel, "※自分の対戦成績を確認しよう");
         randomMatchPane = new Container();
         privateMatchPane = new Container();
         checkRecordPane = new Container();
@@ -59,13 +60,13 @@ public class MatchingPanel extends JPanel {
         }
         textArea.setEditable(false);
         textArea.setLineWrap(true);
-        textArea.setFont(FontScheme.MATCHING_LABEL.getFont());
+        textArea.setFont(FontScheme.MATCHING_RULE.getFont());
         textArea.setBackground(ColorScheme.LIGHT_GOLD.getColor());
         scrollPane.setPreferredSize(new Dimension(400, 600));
         scrollPane.setBorder(new LineBorder(Color.BLACK, 1, false));
-        randomMatchButton.addActionListener(actionEvent -> randomMatchAction());
-        privateMatchButton.addActionListener(actionEvent -> privateMatchAction());
-        checkRecordButton.addActionListener(actionEvent -> checkRecordAction());
+        randomMatchButton.addActionListener(e -> randomMatch());
+        privateMatchButton.addActionListener(e -> privateMatch());
+        checkRecordButton.addActionListener(e -> checkRecord());
         randomMatchPane.setLayout(new GridBagLayout());
         privateMatchPane.setLayout(new GridBagLayout());
         checkRecordPane.setLayout(new GridBagLayout());
@@ -84,16 +85,14 @@ public class MatchingPanel extends JPanel {
         add(buttonHolder, LayoutScheme.MATCHING_BUTTONHOLDER.getLayout());
     }
 
-    private void randomMatchAction() {
+    private void randomMatch() {
         JSONObject randomMatchRequest = RequestBuffer.getInstance().getRequestObject();
         randomMatchRequest.put(Protocol.Request.toString(), Request.RANDOM_MATCH);
         RequestBuffer.getInstance().registerRequest(randomMatchRequest);
     }
 
-    private void privateMatchAction() {
-        FactoryConstructor.getFactory(UIKeyword.Dialog)
-                .getDialog(parentFrame, UIKeyword.RequestPrivateMatchDialog, null, "<html>プライベートロビーIDを入力ください<br>（4桁半角英数字）</html>")
-                .setVisible(true);
+    private void privateMatch() {
+        RequestPrivateMatchDialog.getDialog(parentFrame, this).setVisible(true);
     }
 
     public void requestPrivateMatch(String privateMatchID) {
@@ -103,7 +102,7 @@ public class MatchingPanel extends JPanel {
         RequestBuffer.getInstance().registerRequest(privateMatchRequest);
     }
 
-    private void checkRecordAction() {
+    private void checkRecord() {
         JSONObject checkRecordRequest = RequestBuffer.getInstance().getRequestObject();
         checkRecordRequest.put(Protocol.Request.toString(), Request.CHECK_RECORD);
         RequestBuffer.getInstance().registerRequest(checkRecordRequest);

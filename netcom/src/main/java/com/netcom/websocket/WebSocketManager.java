@@ -18,7 +18,10 @@ public class WebSocketManager {
     }
     
     public boolean isConnected() {
-        return session.isOpen();
+        if (session != null) {
+            return session.isOpen();
+        }
+        return false;
     }
 
     public void connect() {

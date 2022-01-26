@@ -15,23 +15,19 @@ import javax.swing.*;
 
 public class LabelFactory implements ComponentFactory {
     @Override
-    public JDialog getDialog(MainFrame mainFrame, UIKeyword dialog, Boolean status, String message) {
-        return null;
-    }
-
-    @Override
-    public JLabel getLabel(UIKeyword panel, String label) {
-        return switch (panel) {
-            case TopPanel -> new TopPanelLabel(label);
-            case MatchingPanel -> new MatchingPanelLabel(label);
-            case LobbyPanel -> new LobbyPanelLabel();
-            case GamePanel -> null; //TODO: ゲームパネルラベルクラスは要作成
-            default -> null;
+    public JLabel getLabel(UIKeyword labelType, String text) {
+        return switch (labelType) {
+            case TopPanelLabel -> new TopPanelLabel(text);
+            case MatchingPanelLabel -> new MatchingPanelLabel(text);
+            case LobbyPanelLabel -> new LobbyPanelLabel();
+            case GamePanelMapLabel -> new GamePanelMapLabel(text);
+            case GamePanelMapExampleLabel -> new GamePanelMapExampleLabel(text);
+            default -> throw new IllegalArgumentException("Unexpected value: " + labelType);
         };
     }
 
     @Override
-    public JButton getButton(UIKeyword panel, String label) {
+    public JButton getButton(UIKeyword buttonType, String label) {
         return null;
     }
 }
