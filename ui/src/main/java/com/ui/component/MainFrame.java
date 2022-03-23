@@ -28,14 +28,9 @@ public class MainFrame extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        contentPane = getContentPane();
-
         setTopPanel();
+        contentPane = getContentPane();
         contentPane.add(topPanel);
-//        setMatchingPanel();
-//        contentPane.add(matchingPanel);
-//        setGamePanel();
-//        contentPane.add(gamePanel);
         pack();
         setVisible(true);
     }
@@ -75,7 +70,7 @@ public class MainFrame extends JFrame {
     public void changePanel(JPanel nextPanel) {
         contentPane.removeAll();
         contentPane.add(nextPanel);
-        contentPane.validate(); //repaint()の前は必ずvalidate()
+        contentPane.validate(); //make sure validate() before repaint()
         contentPane.repaint();
     }
 

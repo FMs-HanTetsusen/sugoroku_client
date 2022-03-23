@@ -9,7 +9,7 @@ application {
 }
 
 dependencies {
-    implementation(projects.ui)
-    implementation(projects.data)
-    implementation(projects.netcom)
+    implementation(project(":ui"))
+    implementation(project(":data"))
+    implementation(project(":netcom"))
 }

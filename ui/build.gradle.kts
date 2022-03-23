@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.data)
+    implementation(project(":data"))
 }

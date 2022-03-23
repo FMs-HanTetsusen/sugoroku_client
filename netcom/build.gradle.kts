@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.data)
-    implementation("org.glassfish.tyrus:tyrus-container-grizzly-client:2.0.1")
+    implementation(project(":data"))
+    implementation("org.glassfish.tyrus:tyrus-container-grizzly-client:2.0.2")
 }
